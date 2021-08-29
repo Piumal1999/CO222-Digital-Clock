@@ -20,5 +20,20 @@ int main(int argc, char **argv){
         return 0;
     }
 
+    printf("\e[?25l"); // make cursor invisible
+    printf("\e[?47h"); // save screen
+    printf("\e7"); // save cursor position
+    printf("\e[H"); // move cursor to home position
+    printf("\e[J"); // clear screen
+
+    for(int i=0;i<300000;i++){
+        printf("This will be the time")
+        printf("\e[H"); // move cursor to home position
+    }
+
+    printf("\e8"); // restore cursor
+    printf("\e[?47l"); // restore screen
+    printf("\e[?25h"); // make cursor visible
+
     return 0;
 }
