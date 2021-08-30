@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 void sighandler(int);
+void printBigCharacter(char);
 
 int main(int argc, char **argv){
     if(argc > 3) {
@@ -33,11 +34,15 @@ int main(int argc, char **argv){
     printf("\e[H"); // move cursor to home position
     printf("\e[J"); // clear screen
 
-    while(1){
+    while (1) {
         time_t currentTime;
         time(&currentTime);
         char *timestr = asctime(localtime(&currentTime));
-        printf("%s", timestr);
+        printf("\e[1B\e[1C");
+        for (int i = 11; i <= 18; i++) {
+            printBigCharacter(timestr[i]);
+            printf("\e[5A\e[1C");
+        }
         printf("\e[H"); // move cursor to home position
     }
 
@@ -51,5 +56,72 @@ void sighandler(int signum) {
     exit(0);
 }
 
-
+void printBigCharacter(char c) {
+    if (c == ':') {
+        printf("    \e[1B\e[4D");
+        printf(" ██ \e[1B\e[4D");
+        printf("    \e[1B\e[4D");
+        printf(" ██ \e[1B\e[4D");
+        printf("    \e[1B");
+    } else if (c == '0') {
+        printf("██████\e[1B\e[6D");
+        printf("██  ██\e[1B\e[6D");
+        printf("██  ██\e[1B\e[6D");
+        printf("██  ██\e[1B\e[6D");
+        printf("██████\e[1B");
+    } else if (c == '1') {
+        printf("    ██\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("    ██\e[1B");
+    } else if (c == '2') {
+        printf("██████\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("██████\e[1B\e[6D");
+        printf("██    \e[1B\e[6D");
+        printf("██████\e[1B");
+    } else if (c == '3') {
+        printf("██████\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("██████\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("██████\e[1B");
+    } else if (c == '4') {
+        printf("██  ██\e[1B\e[6D");
+        printf("██  ██\e[1B\e[6D");
+        printf("██████\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("    ██\e[1B");
+    } else if (c == '5') {
+        printf("██████\e[1B\e[6D");
+        printf("██    \e[1B\e[6D");
+        printf("██████\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("██████\e[1B");
+    } else if (c == '6') {
+        printf("██████\e[1B\e[6D");
+        printf("██    \e[1B\e[6D");
+        printf("██████\e[1B\e[6D");
+        printf("██  ██\e[1B\e[6D");
+        printf("██████\e[1B");
+    } else if (c == '7') {
+        printf("██████\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("    ██\e[1B");
+    } else if (c == '8') {
+        printf("██████\e[1B\e[6D");
+        printf("██  ██\e[1B\e[6D");
+        printf("██████\e[1B\e[6D");
+        printf("██  ██\e[1B\e[6D");
+        printf("██████\e[1B");
+    } else if (c == '9') {
+        printf("██████\e[1B\e[6D");
+        printf("██  ██\e[1B\e[6D");
+        printf("██████\e[1B\e[6D");
+        printf("    ██\e[1B\e[6D");
+        printf("██████\e[1B");
+    }
 }
