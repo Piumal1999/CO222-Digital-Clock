@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <signal.h>
+#include <stdlib.h>
+
+void sighandler(int);
 
 int main(int argc, char **argv){
     if(argc > 3) {
@@ -21,22 +25,31 @@ int main(int argc, char **argv){
         return 0;
     }
 
+    signal(SIGINT, sighandler);
+
     printf("\e[?25l"); // make cursor invisible
     printf("\e[?47h"); // save screen
     printf("\e7"); // save cursor position
     printf("\e[H"); // move cursor to home position
     printf("\e[J"); // clear screen
 
-    for(int i=0;i<300000;i++){
+    while(1){
         time_t currentTime;
         time(&currentTime);
-        printf("%s", asctime(localtime(&currentTime)));
+        char *timestr = asctime(localtime(&currentTime));
+        printf("%s", timestr);
         printf("\e[H"); // move cursor to home position
     }
 
+    return 0;
+}
+
+void sighandler(int signum) {
     printf("\e8"); // restore cursor
     printf("\e[?47l"); // restore screen
     printf("\e[?25h"); // make cursor visible
+    exit(0);
+}
 
-    return 0;
+
 }
