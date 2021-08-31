@@ -14,7 +14,7 @@
 #define CYAN 36
 #define WHITE 37
 
-void sighandler(int);
+void handleInterruption(int);
 void printBigCharacter(char);
 void printInvalidArgsError();
 void printInvalidColorError(char *);
@@ -47,7 +47,7 @@ int main(int argc, char ** argv) {
         }
     }
 
-    signal(SIGINT, sighandler);
+    signal(SIGINT, handleInterruption);
 
     printf("\e[?25l"); // make cursor invisible
     printf("\e[?47h"); // save screen
@@ -120,7 +120,7 @@ void printInvalidColorError(char * color) {
     printf("%s :This is not a valid color, Please enter one of these colours: black, red, green, yellow, blue, magenta, cyan, white\n", color);
 }
 
-void sighandler(int signum) {
+void handleInterruption(int signum) {
     printf("\e8"); // restore cursor
     printf("\e[?47l"); // restore screen
     printf("\e[?25h"); // make cursor visible
