@@ -4,26 +4,44 @@
 #include <signal.h>
 #include <stdlib.h>
 
+#define RESET 0
+#define BLACK 30
+#define RED 31
+#define GREEN 32
+#define YELLOW 33
+#define BLUE 34
+#define MAGENTA 35
+#define CYAN 36
+#define WHITE 37
+
 void sighandler(int);
 void printBigCharacter(char);
+int setColor(char * );
 
-int main(int argc, char **argv){
-    if(argc > 3) {
-        printf("Invalid argument count\n");
-        return 0;
-    } else if(argc == 3) {
-        if(0 != strcmp(argv[1], "-c")){
-            printf("Invalid input\n");
+int main(int argc, char ** argv) {
+    for (int i = 1; i < argc; i++) {
+        if (0 == strcmp(argv[i], "-h")) {
+            printf("usage : clock -h            quick help on cmd\n");
+            printf("usage : clock -c <color>    print clock with a color\n");
+            printf("<color-black|red|green|yellow|blue|magenta|cyan|white> 	supported colors\n");
             return 0;
         }
-        printf("colour is %s.\n", argv[2]);
-    } else if(argc == 2) {
-        if(0 != strcmp(argv[1], "-h")){
-            printf("Invalid input\n");
-            return 0;
+        if (0 == strcmp(argv[i], "-c")) {
+            if (i == argc - 1) {
+                printf("Invalid use of arguments.\n");
+                printf("usage : clock -h            quick help on cmd\n");
+                printf("usage : clock -c <color>    print clock with a color\n");
+                return 0;
+            } else {
+                char * color = argv[i + 1];
+                if (0 == setColor(color)) {
+                    printf("Invalid use of arguments.\n");
+                    printf("usage : clock -h            quick help on cmd\n");
+                    printf("usage : clock -c <color>    print clock with a color\n");
+                    return 0;
+                }
+            }
         }
-        printf("help");
-        return 0;
     }
 
     signal(SIGINT, sighandler);
@@ -49,10 +67,34 @@ int main(int argc, char **argv){
     return 0;
 }
 
+int setColor(char * color) {
+    if (0 == strcasecmp(color, "black")) {
+        printf("\e[%dm", BLACK);
+    } else if (0 == strcasecmp(color, "red")) {
+        printf("\e[%dm", RED);
+    } else if (0 == strcasecmp(color, "green")) {
+        printf("\e[%dm", GREEN);
+    } else if (0 == strcasecmp(color, "yellow")) {
+        printf("\e[%dm", YELLOW);
+    } else if (0 == strcasecmp(color, "blue")) {
+        printf("\e[%dm", BLUE);
+    } else if (0 == strcasecmp(color, "magenta")) {
+        printf("\e[%dm", MAGENTA);
+    } else if (0 == strcasecmp(color, "cyan")) {
+        printf("\e[%dm", CYAN);
+    } else if (0 == strcasecmp(color, "white")) {
+        printf("\e[%dm", WHITE);
+    } else {
+        return 0;
+    }
+    return 1;
+}
+
 void sighandler(int signum) {
     printf("\e8"); // restore cursor
     printf("\e[?47l"); // restore screen
     printf("\e[?25h"); // make cursor visible
+    printf("\e[%dm", RESET);
     exit(0);
 }
 
