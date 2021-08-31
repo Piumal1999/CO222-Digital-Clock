@@ -17,24 +17,30 @@
 void sighandler(int);
 void printBigCharacter(char);
 void printInvalidArgsError();
+void printInvalidColorError(char *);
 void displayTime();
 void printHelp();
-int setColor(char * );
+int setColor(char *);
+void resetColor();
 
 int main(int argc, char ** argv) {
+    setColor("white");
     for (int i = 1; i < argc; i++) {
         if (0 == strcmp(argv[i], "-h")) {
+            resetColor();
             printHelp();
             return 0;
         }
         if (0 == strcmp(argv[i], "-c")) {
             if (i == argc - 1) {
+                resetColor();
                 printInvalidArgsError();
                 return 0;
             } else {
                 char * color = argv[i + 1];
                 if (0 == setColor(color)) {
-                    printInvalidArgsError();
+                    resetColor();
+                    printInvalidColorError(color);
                     return 0;
                 }
             }
@@ -79,6 +85,10 @@ int setColor(char * color) {
     return 1;
 }
 
+void resetColor() {
+    printf("\e[%dm", RESET);
+}
+
 void displayTime() {
     time_t currentTime;
     time(&currentTime);
@@ -104,6 +114,10 @@ void printInvalidArgsError() {
     printf("Invalid use of arguments.\n");
     printf("usage : clock -h            quick help on cmd\n");
     printf("usage : clock -c <color>    print clock with a color\n");
+}
+
+void printInvalidColorError(char * color) {
+    printf("%s :This is not a valid color, Please enter one of these colours: black, red, green, yellow, blue, magenta, cyan, white\n", color);
 }
 
 void sighandler(int signum) {
