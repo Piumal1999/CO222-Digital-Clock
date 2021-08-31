@@ -82,12 +82,15 @@ int setColor(char * color) {
 void displayTime() {
     time_t currentTime;
     time(&currentTime);
-    char *timestr = asctime(localtime(&currentTime));
+    struct tm tm = *localtime(&currentTime);
+    char *timestr = asctime(&tm);
     printf("\e[1B\e[1C");
     for (int i = 11; i <= 18; i++) {
         printBigCharacter(timestr[i]);
         printf("\e[5A\e[1C");
     }
+    printf("\e[6B\e[31D");
+    printf("%d-%.2d-%.2d", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday);
     printf("\e[H"); // move cursor to home position
 }
 
