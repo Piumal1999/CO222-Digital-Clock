@@ -16,28 +16,25 @@
 
 void sighandler(int);
 void printBigCharacter(char);
+void printInvalidArgsError();
+void displayTime();
+void printHelp();
 int setColor(char * );
 
 int main(int argc, char ** argv) {
     for (int i = 1; i < argc; i++) {
         if (0 == strcmp(argv[i], "-h")) {
-            printf("usage : clock -h            quick help on cmd\n");
-            printf("usage : clock -c <color>    print clock with a color\n");
-            printf("<color-black|red|green|yellow|blue|magenta|cyan|white> 	supported colors\n");
+            printHelp();
             return 0;
         }
         if (0 == strcmp(argv[i], "-c")) {
             if (i == argc - 1) {
-                printf("Invalid use of arguments.\n");
-                printf("usage : clock -h            quick help on cmd\n");
-                printf("usage : clock -c <color>    print clock with a color\n");
+                printInvalidArgsError();
                 return 0;
             } else {
                 char * color = argv[i + 1];
                 if (0 == setColor(color)) {
-                    printf("Invalid use of arguments.\n");
-                    printf("usage : clock -h            quick help on cmd\n");
-                    printf("usage : clock -c <color>    print clock with a color\n");
+                    printInvalidArgsError();
                     return 0;
                 }
             }
@@ -53,15 +50,7 @@ int main(int argc, char ** argv) {
     printf("\e[J"); // clear screen
 
     while (1) {
-        time_t currentTime;
-        time(&currentTime);
-        char *timestr = asctime(localtime(&currentTime));
-        printf("\e[1B\e[1C");
-        for (int i = 11; i <= 18; i++) {
-            printBigCharacter(timestr[i]);
-            printf("\e[5A\e[1C");
-        }
-        printf("\e[H"); // move cursor to home position
+        displayTime();
     }
 
     return 0;
@@ -88,6 +77,30 @@ int setColor(char * color) {
         return 0;
     }
     return 1;
+}
+
+void displayTime() {
+    time_t currentTime;
+    time(&currentTime);
+    char *timestr = asctime(localtime(&currentTime));
+    printf("\e[1B\e[1C");
+    for (int i = 11; i <= 18; i++) {
+        printBigCharacter(timestr[i]);
+        printf("\e[5A\e[1C");
+    }
+    printf("\e[H"); // move cursor to home position
+}
+
+void printHelp() {
+    printf("usage : clock -h            quick help on cmd\n");
+    printf("usage : clock -c <color>    print clock with a color\n");
+    printf("<color-black|red|green|yellow|blue|magenta|cyan|white> 	supported colors\n");
+}
+
+void printInvalidArgsError() {
+    printf("Invalid use of arguments.\n");
+    printf("usage : clock -h            quick help on cmd\n");
+    printf("usage : clock -c <color>    print clock with a color\n");
 }
 
 void sighandler(int signum) {
