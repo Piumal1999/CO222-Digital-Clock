@@ -25,26 +25,39 @@ void resetColor();
 
 int main(int argc, char ** argv) {
     setColor("white");
-    for (int i = 1; i < argc; i++) {
-        if (0 == strcmp(argv[i], "-h")) {
-            resetColor();
-            printHelp();
-            return 0;
-        }
-        if (0 == strcmp(argv[i], "-c")) {
-            if (i == argc - 1) {
-                resetColor();
-                printInvalidArgsError();
-                return 0;
+
+    char * color;
+    int isHelpNeeded;
+    int isInvalidArgs;
+    int s = 1;
+    while (s < argc) {
+        if (0 == strcmp(argv[s], "-c")) {
+            if (s == argc - 1) {
+                isInvalidArgs = 1;
+                s++;
+                continue;
             } else {
-                char * color = argv[i + 1];
-                if (0 == setColor(color)) {
-                    resetColor();
-                    printInvalidColorError(color);
-                    return 0;
-                }
+                color = argv[s + 1];
+                s = s + 2;
+                continue;
             }
         }
+        if (0 == strcmp(argv[s], "-h")) {
+            isHelpNeeded = 1;
+        }
+        s++;
+    }
+
+    if (isHelpNeeded) {
+        resetColor();
+        printHelp();
+        return 0;
+    } else if (isInvalidArgs) {
+        printInvalidArgsError();
+        return 0;
+    } else if (0 == setColor(color)) {
+        printInvalidColorError(color);
+        return 0;
     }
 
     signal(SIGINT, handleInterruption);
