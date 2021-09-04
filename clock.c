@@ -15,41 +15,67 @@
 #define CYAN 36
 #define WHITE 37
 
+// define boolean values
 #define TRUE 1
 #define FALSE 0
 
 void handleInterruption(int);
 void printBigCharacter(char);
 void printInvalidArgsError();
-void printInvalidColorError(char *);
+void printInvalidColorError(char[]);
 void displayTime();
 void printHelp();
-int setColor(char *);
+int setColor(char[]);
 void resetColor();
-
 
 time_t currentTime; // variable to keep the current time
 
 int main(int argc, char ** argv) {
 
-    char * color = "white"; //  setting default color
-    int isHelpNeeded = FALSE, isInvalidArgs = FALSE;    // variables to keep track of the help/error message
-    int index = 1;  // variable to track the args positions
+    char color[128] = "white"; //  setting default color
+    int isHelpNeeded = FALSE, isInvalidArgs = FALSE; // variables to keep track of the help/error message
+    int index = 1; // variable to track the args positions
 
     while (index < argc) {
-        if (0 == strcmp(argv[index], "-c")) {
-            if (index == argc - 1) {
-                isInvalidArgs = TRUE;
+        if (strlen(argv[index]) >= 2) {
+            if (argv[index][0] == '-' && argv[index][1] == 'c') {
+                if (strlen(argv[index]) == 2) {
+                    if (index == argc - 1) {
+                        isInvalidArgs = TRUE;
+                        index++;
+                        continue;
+                    } else {
+                        strcpy(color, argv[index + 1]);
+                        index = index + 2;
+                        continue;
+                    }
+                } else {
+                    int c = 0;
+                    int l = strlen(argv[index]) - 2;
+                    char str[l];
+
+                    while (c < l) {
+                        str[c] = argv[index][c + 2];
+                        c++;
+                    }
+                    str[l] = '\0';
+                    strcpy(color, str);
+                    index++;
+                    continue;
+                }
+            } else if (argv[index][0] == '-' && argv[index][1] == 'h') {
+                isHelpNeeded = TRUE;
                 index++;
                 continue;
-            } else {
-                color = argv[index + 1];
-                index = index + 2;
-                continue;
+            } else if (strlen(argv[index]) == 2 && argv[index][0] == '-' && argv[index][1] == '-') {
+                index++;
+                break;
+            } else if (argv[index][0] == '-') {
+                isInvalidArgs = TRUE;
+                index++;
+                break;
             }
-        }
-        if (0 == strcmp(argv[index], "-h")) {
-            isHelpNeeded = TRUE;
+            index++;
         }
         index++;
     }
@@ -87,7 +113,7 @@ int main(int argc, char ** argv) {
 // function to check and set the color mode
 // returns 1 if successful
 // returns 0 if unsuccessful
-int setColor(char * color) {
+int setColor(char color[]) {
     if (0 == strcasecmp(color, "black")) {
         printf("\e[%dm", BLACK);
     } else if (0 == strcasecmp(color, "red")) {
@@ -145,7 +171,7 @@ void printInvalidArgsError() {
 }
 
 // function to print the invalid color error message
-void printInvalidColorError(char * color) {
+void printInvalidColorError(char color[]) {
     printf("%s :This is not a valid color, Please enter one of these colours: black, red, green, yellow, blue, magenta, cyan, white\n", color);
 }
 
