@@ -36,50 +36,53 @@ int main(int argc, char ** argv) {
     int isHelpNeeded = FALSE, isInvalidArgs = FALSE; // variables to keep track of the help/error message
     int index = 1; // variable to track the args positions
 
+    // checking the arguments
     while (index < argc) {
         if (strlen(argv[index]) >= 2) {
-            if (argv[index][0] == '-' && argv[index][1] == 'c') {
-                if (strlen(argv[index]) == 2) {
-                    if (index == argc - 1) {
+            if (argv[index][0] == '-' && argv[index][1] == 'c') {   // if the argument starts with '-c'
+                if (strlen(argv[index]) == 2) { // when argument is exactly '-c'
+                    if (index == argc - 1) {    // if there are no more arguments
                         isInvalidArgs = TRUE;
                         index++;
                         continue;
                     } else {
-                        strcpy(color, argv[index + 1]);
-                        index = index + 2;
+                        strcpy(color, argv[index + 1]); // use the next argument as the color
+                        index = index + 2;  // to skip the next argument
                         continue;
                     }
-                } else {
+                } else {    // when argument starts with '-c' but not exactly '-c'
                     int c = 0;
                     int l = strlen(argv[index]) - 2;
                     char str[l];
 
+                    // extract the next part of the argument
                     while (c < l) {
                         str[c] = argv[index][c + 2];
                         c++;
                     }
                     str[l] = '\0';
-                    strcpy(color, str);
+                    strcpy(color, str); // use the extracted part as the color
                     index++;
                     continue;
                 }
-            } else if (argv[index][0] == '-' && argv[index][1] == 'h') {
+            } else if (argv[index][0] == '-' && argv[index][1] == 'h') {    // if the argument starts with '-h'
                 isHelpNeeded = TRUE;
                 index++;
                 continue;
-            } else if (strlen(argv[index]) == 2 && argv[index][0] == '-' && argv[index][1] == '-') {
+            } else if (strlen(argv[index]) == 2 && argv[index][0] == '-' && argv[index][1] == '-') {    // if the argument is '--'
                 index++;
                 break;
-            } else if (argv[index][0] == '-') {
+            } else if (argv[index][0] == '-') { // if the argument starts with '-' but not exactly '--' (note: when argument length >=2)
                 isInvalidArgs = TRUE;
                 index++;
                 break;
             }
-            index++;
+            index++;    // skip all other argument types with length>=2
         }
-        index++;
+        index++;    // skip all other argument types with length<2
     }
 
+    // check for errors and print the relevant error messages if there are any
     if (isHelpNeeded) {
         resetColor();
         printHelp();
@@ -94,13 +97,13 @@ int main(int argc, char ** argv) {
         return 0;
     }
 
-    signal(SIGINT, handleInterruption);
+    signal(SIGINT, handleInterruption); // handle the interruption
 
-    printf("\e[?25l");  // make cursor invisible
-    printf("\e[?47h");  // save screen
-    printf("\e7");      // save cursor position
-    printf("\e[H");     // move cursor to home position
-    printf("\e[J");     // clear screen
+    printf("\e[?25l");  // make the cursor invisible
+    printf("\e[?47h");  // save the current screen
+    printf("\e7");      // save the current cursor position
+    printf("\e[H");     // move the cursor to home position
+    printf("\e[J");     // clear the screen
 
     time(&currentTime);
     while (TRUE) {
@@ -143,16 +146,16 @@ void resetColor() {
 
 // function to get the current time,date and display it
 void displayTime() {
-    time(&currentTime);
+    time(&currentTime); // set the current time
     struct tm tm = *localtime(&currentTime);
     char *timestr = asctime(&tm);
-    printf("\e[1B\e[1C");
+    printf("\e[1B\e[1C");   // set the top and left margins (by moving the cursor)
     for (int i = 11; i <= 18; i++) {
-        printBigCharacter(timestr[i]);
-        printf("\e[5A\e[1C");
+        printBigCharacter(timestr[i]);  // print the number in block characters
+        printf("\e[5A\e[1C");   // move the cursor to the next starting position
     }
-    printf("\e[6B\e[31D");
-    printf("%d-%.2d-%.2d", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday);
+    printf("\e[6B\e[31D");  // move the cursor to the starting position of date
+    printf("%d-%.2d-%.2d", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday);   // print the date
     printf("\e[H"); // move cursor to home position
 }
 
@@ -180,11 +183,11 @@ void handleInterruption(int signum) {
     printf("\e8"); // restore cursor
     printf("\e[?47l"); // restore screen
     printf("\e[?25h"); // make cursor visible
-    printf("\e[%dm", RESET);
-    exit(0);
+    resetColor(); // reset the color
+    exit(0); // terminate the program
 }
 
-// function to print a given number or colon sign with block characters
+// function to print a given character (number or colon sign) with block characters
 void printBigCharacter(char c) {
     if (c == ':') {
         printf("    \e[1B\e[4D");
